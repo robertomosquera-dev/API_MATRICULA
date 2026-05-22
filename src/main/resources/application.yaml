@@ -2,9 +2,9 @@ spring:
   application:
     name: APP_MATRICULA
   datasource:
-    url: jdbc:postgresql://localhost:5432/matricula_bd
-    username: root
-    password: 1134
+    url: ${BD_URL}
+    username: ${BD_USER}
+    password: ${BD_PASS}
     hikari:
       maximum-pool-size: 10
       minimum-idle: 2
