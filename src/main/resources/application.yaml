@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: APP_MATRICULA
+  datasource:
+    url: jdbc:postgresql://localhost:5432/matricula_bd
+    username: root
+    password: 1134
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+  threads:
+    virtual:
+      enabled: true
+
