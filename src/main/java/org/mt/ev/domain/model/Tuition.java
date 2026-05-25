@@ -8,7 +8,10 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -33,6 +36,14 @@ public class Tuition {
         this.status = false;
     }
 
+    //Intetar probar
+    public Student getStudentIsCourse(UUID courseId) {
+        if(details.stream().anyMatch(detail -> detail.getCourse().getId().equals(courseId))){
+            return student;
+        }
+        return null;
+    }
+
     public static Tuition create(
             LocalDateTime tuitionDate,
             Student student,
@@ -48,7 +59,6 @@ public class Tuition {
             throw new IllegalArgumentException("Debe incluir al menos un curso");
 
         return Tuition.builder()
-                .tuitionDate(tuitionDate != null ? tuitionDate : LocalDateTime.now())
                 .student(student)
                 .details(details)
                 .build();

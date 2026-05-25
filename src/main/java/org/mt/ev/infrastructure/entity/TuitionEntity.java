@@ -44,6 +44,9 @@ public class TuitionEntity {
         if (this.status == null) {
             this.status = true;
         }
+        if (this.tuitionDate == null) {
+            this.tuitionDate = LocalDateTime.now();
+        }
     }
 
 }

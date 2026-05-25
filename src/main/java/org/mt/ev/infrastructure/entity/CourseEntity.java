@@ -13,14 +13,18 @@ import java.util.UUID;
 @Getter
 @Setter
 public class CourseEntity {
+
     @Id
     @Column(nullable = false, updatable = false)
     private UUID id;
 
+    @Column(nullable = false, unique = true,length = 80)
     private String name;
 
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false, unique = true,length = 7)
     private String abbreviation;
 
     private Boolean status;
@@ -34,4 +38,5 @@ public class CourseEntity {
             this.status = true;
         }
     }
+
 }
