@@ -1,4 +1,5 @@
 package org.mt.ev.infrastructure.controller;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.StudentRequest;
 import org.mt.ev.application.dto.Response.StudentResponse;
@@ -23,7 +24,7 @@ public class StudentController {
     private final DeleteStudentUseCase deleteStudentUseCase;
 
     @PostMapping
-    public ResponseEntity<StudentResponse> create(@RequestBody StudentRequest request) {
+    public ResponseEntity<StudentResponse> create(@Valid @RequestBody StudentRequest request) {
         return ResponseEntity.ok(createStudentUseCase.createStudent(request));
     }
 
@@ -46,7 +47,7 @@ public class StudentController {
     }
 
     @PutMapping
-    public ResponseEntity<StudentResponse> update(@RequestBody StudentRequest request) {
+    public ResponseEntity<StudentResponse> update(@Valid @RequestBody StudentRequest request) {
         return ResponseEntity.ok(updateStudentUseCase.updateStudent(request));
     }
 

@@ -1,5 +1,6 @@
 package org.mt.ev.infrastructure.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.TuitionRequest;
 import org.mt.ev.application.dto.Response.TuitionResponse;
@@ -20,7 +21,7 @@ public class TuitionController {
     private final FindTuitionUseCase findTuitionUseCase;
 
     @PostMapping
-    public ResponseEntity<TuitionResponse> create(@RequestBody TuitionRequest request) {
+    public ResponseEntity<TuitionResponse> create(@Valid @RequestBody TuitionRequest request) {
         return ResponseEntity.ok(createTuitionUseCase.createTuition(request));
     }
 

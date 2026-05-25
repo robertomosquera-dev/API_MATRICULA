@@ -1,5 +1,6 @@
 package org.mt.ev.infrastructure.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.CourseRequest;
 import org.mt.ev.application.dto.Response.CourseResponse;
@@ -21,7 +22,7 @@ public class CourseController {
     private final ChangeStatusCourseUseCase changeStatusCourseUseCase;
 
     @PostMapping
-    public ResponseEntity<CourseResponse> create(@RequestBody CourseRequest request) {
+    public ResponseEntity<CourseResponse> create(@Valid @RequestBody CourseRequest request) {
         return ResponseEntity.ok(createCourseUseCase.createCourse(request));
     }
 
@@ -47,7 +48,7 @@ public class CourseController {
     }
 
     @PutMapping
-    public ResponseEntity<CourseResponse> update(@RequestBody CourseRequest request) {
+    public ResponseEntity<CourseResponse> update(@Valid @RequestBody CourseRequest request) {
         return ResponseEntity.ok(updateCourseUseCase.updateCourse(request));
     }
 
