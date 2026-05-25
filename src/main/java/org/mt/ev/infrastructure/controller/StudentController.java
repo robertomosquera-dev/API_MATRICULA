@@ -47,7 +47,7 @@ public class StudentController {
         return ResponseEntity.ok(findStudentUseCase.findAllStudent(page, size, sort));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<StudentResponse> update(@Valid @RequestBody StudentUpdateRequest request, @PathVariable UUID id) {
         return ResponseEntity.ok(updateStudentUseCase.updateStudent(request,id));
     }

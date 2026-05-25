@@ -2,6 +2,7 @@ package org.mt.ev.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.CourseRequest;
+import org.mt.ev.application.dto.Request.CourseUpdateRequest;
 import org.mt.ev.application.dto.Response.CourseResponse;
 import org.mt.ev.application.port.input.courseUseCase.*;
 import org.mt.ev.application.port.out.CourseRepositoryPort;
@@ -65,8 +66,8 @@ public class CourseService implements
     }
 
     @Override
-    public CourseResponse updateCourse(CourseRequest courseRequest) {
-        Course course = courseMapper.toDomainFromRequest(courseRequest);
+    public CourseResponse updateCourse(CourseUpdateRequest courseRequest, UUID courseId) {
+        Course course = courseMapper.toDomainFromUpdateRequest(courseRequest,courseId);
         course = courseRepositoryPort.update(course);
         return courseMapper.toResponse(course);
     }

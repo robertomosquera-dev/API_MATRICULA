@@ -3,6 +3,7 @@ package org.mt.ev.infrastructure.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.CourseRequest;
+import org.mt.ev.application.dto.Request.CourseUpdateRequest;
 import org.mt.ev.application.dto.Response.CourseResponse;
 import org.mt.ev.application.port.input.courseUseCase.*;
 import org.springframework.http.ResponseEntity;
@@ -47,9 +48,9 @@ public class CourseController {
         );
     }
 
-    @PutMapping
-    public ResponseEntity<CourseResponse> update(@Valid @RequestBody CourseRequest request) {
-        return ResponseEntity.ok(updateCourseUseCase.updateCourse(request));
+    @PatchMapping("/{id}")
+    public ResponseEntity<CourseResponse> update(@Valid @RequestBody CourseUpdateRequest request, @PathVariable UUID id) {
+        return ResponseEntity.ok(updateCourseUseCase.updateCourse(request,id));
     }
 
     @PatchMapping("/{id}/enable")
