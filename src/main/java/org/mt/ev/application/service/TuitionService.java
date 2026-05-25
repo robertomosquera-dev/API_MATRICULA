@@ -13,8 +13,6 @@ import org.mt.ev.domain.model.Course;
 import org.mt.ev.domain.model.Student;
 import org.mt.ev.domain.model.Tuition;
 import org.mt.ev.domain.model.TuitionDetail;
-import org.mt.ev.infrastructure.entity.TuitionDetailEntity;
-import org.mt.ev.infrastructure.mapper.TuitionDetailMapper;
 import org.mt.ev.infrastructure.mapper.TuitionMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +64,7 @@ public class TuitionService
     }
 
     @Override
-    public TuitionResponse findTuitionById(String id) {
+    public TuitionResponse findTuitionById(UUID id) {
 
         Tuition tuition = tuitionRepositoryPort.findById(id);
 
@@ -72,8 +72,25 @@ public class TuitionService
     }
 
     @Override
-    public Map<String, Set<String>> findTuitionMapById(String id) {
-        return Map.of();
+    public Map<String, Set<String>> findTuitionMap() {
+
+        List<Tuition> tuitions = tuitionRepositoryPort.findAll();
+
+        return tuitions.stream()
+                .flatMap(tuition ->
+                        tuition.getDetails().stream()
+                                .map(detail -> Map.entry(
+                                        detail.getCourse().getName(),
+                                        tuition.getStudent().getFullName()
+                                ))
+                )
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.mapping(
+                                Map.Entry::getValue,
+                                Collectors.toSet()
+                        )
+                ));
     }
 
 }

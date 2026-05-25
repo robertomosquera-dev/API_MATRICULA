@@ -75,7 +75,7 @@ public class JpaStudentRepositoryAdapter implements StudentRepositoryPort {
                 PageRequest.of(
                         page,
                         size,
-                        Sort.by(Sort.Direction.fromString(sort), "names")
+                        Sort.by(Sort.Direction.fromString(sort), "age")
                 )
         ).getContent();
 
