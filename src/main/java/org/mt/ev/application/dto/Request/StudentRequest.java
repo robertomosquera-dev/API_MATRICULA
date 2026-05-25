@@ -18,7 +18,8 @@ public record StudentRequest(
     @NotBlank
     String dni,
 
-    @NotNull @Min(0)
+    @NotNull
+    @Min(18)
     Integer age
 ) {
 }

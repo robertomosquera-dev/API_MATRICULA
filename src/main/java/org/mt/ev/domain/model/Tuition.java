@@ -8,10 +8,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -45,7 +42,6 @@ public class Tuition {
     }
 
     public static Tuition create(
-            LocalDateTime tuitionDate,
             Student student,
             List<TuitionDetail> details) {
 

@@ -2,6 +2,7 @@ package org.mt.ev.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.StudentRequest;
+import org.mt.ev.application.dto.Request.StudentUpdateRequest;
 import org.mt.ev.application.dto.Response.StudentResponse;
 import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
@@ -29,6 +30,12 @@ public class StudentService implements
     public StudentResponse createStudent(StudentRequest studentRequest) {
 
         Student student = studentMapper.toDomainFromRequest(studentRequest);
+
+        if (!student.isAdult()) {
+            throw new IllegalStateException(
+                    "El estudiante debe ser mayor de edad"
+            );
+        }
 
         student = studentRepositoryPort.create(student);
 
@@ -66,9 +73,18 @@ public class StudentService implements
     }
 
     @Override
-    public StudentResponse updateStudent(StudentRequest studentRequest) {
-        Student student = studentMapper.toDomainFromRequest(studentRequest);
+    public StudentResponse updateStudent(
+            StudentUpdateRequest studentUpdateRequest,
+            UUID studentId) {
+
+        Student student =
+                studentMapper.toDomainFromUpdateRequest(
+                        studentUpdateRequest,
+                        studentId
+                );
+
         student = studentRepositoryPort.update(student);
+
         return studentMapper.toResponse(student);
     }
 }

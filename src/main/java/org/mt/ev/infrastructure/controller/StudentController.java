@@ -2,6 +2,7 @@ package org.mt.ev.infrastructure.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.StudentRequest;
+import org.mt.ev.application.dto.Request.StudentUpdateRequest;
 import org.mt.ev.application.dto.Response.StudentResponse;
 import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
@@ -46,9 +47,9 @@ public class StudentController {
         return ResponseEntity.ok(findStudentUseCase.findAllStudent(page, size, sort));
     }
 
-    @PutMapping
-    public ResponseEntity<StudentResponse> update(@Valid @RequestBody StudentRequest request) {
-        return ResponseEntity.ok(updateStudentUseCase.updateStudent(request));
+    @PutMapping("/{id}")
+    public ResponseEntity<StudentResponse> update(@Valid @RequestBody StudentUpdateRequest request, @PathVariable UUID id) {
+        return ResponseEntity.ok(updateStudentUseCase.updateStudent(request,id));
     }
 
     @DeleteMapping("/{id}")
