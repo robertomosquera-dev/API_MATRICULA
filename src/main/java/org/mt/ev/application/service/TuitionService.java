@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.TuitionDetailRequest;
 import org.mt.ev.application.dto.Request.TuitionRequest;
 import org.mt.ev.application.dto.Response.TuitionResponse;
+import org.mt.ev.application.port.input.tuitionUseCase.ChangeStatusTuitionUseCase;
 import org.mt.ev.application.port.input.tuitionUseCase.CreateTuitionUseCase;
 import org.mt.ev.application.port.input.tuitionUseCase.FindTuitionUseCase;
 import org.mt.ev.application.port.out.CourseRepositoryPort;
@@ -26,7 +27,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TuitionService
-        implements CreateTuitionUseCase, FindTuitionUseCase {
+        implements CreateTuitionUseCase, FindTuitionUseCase,
+        ChangeStatusTuitionUseCase {
 
     private final TuitionRepositoryPort tuitionRepositoryPort;
     private final CourseRepositoryPort courseRepositoryPort;
@@ -91,6 +93,22 @@ public class TuitionService
                                 Collectors.toSet()
                         )
                 ));
+    }
+
+    @Override
+    public TuitionResponse enable(UUID tuitionId) {
+        Tuition tuition = tuitionRepositoryPort.findById(tuitionId);
+        tuition.enable();
+        tuition = tuitionRepositoryPort.merge(tuition);
+        return tuitionMapper.toResponse(tuition);
+    }
+
+    @Override
+    public TuitionResponse disable(UUID tuitionId) {
+        Tuition tuition = tuitionRepositoryPort.findById(tuitionId);
+        tuition.disable();
+        tuition = tuitionRepositoryPort.merge(tuition);
+        return tuitionMapper.toResponse(tuition);
     }
 
 }

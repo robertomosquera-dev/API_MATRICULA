@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.mt.ev.domain.exceptions.CourseInvalidStateException;
 
 import java.util.UUID;
 
@@ -20,13 +21,13 @@ public class Course {
 
     public void enable() {
         if (Boolean.TRUE.equals(this.status))
-            throw new IllegalStateException("El curso ya está activo");
+            throw CourseInvalidStateException.alreadyActive();
         this.status = true;
     }
 
     public void disable() {
         if (Boolean.FALSE.equals(this.status))
-            throw new IllegalStateException("El curso ya está inactivo");
+            throw CourseInvalidStateException.alreadyInactive();
         this.status = false;
     }
 

@@ -3,10 +3,13 @@ package org.mt.ev.infrastructure.adapter;
 import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.port.out.CourseRepositoryPort;
 import org.mt.ev.domain.model.Course;
+import org.mt.ev.domain.model.CourseStatus;
 import org.mt.ev.infrastructure.entity.CourseEntity;
+import org.mt.ev.infrastructure.exceptions.CourseNotFoundException;
 import org.mt.ev.infrastructure.mapper.CourseMapper;
 import org.mt.ev.infrastructure.repository.SpringDataCourseRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
@@ -29,18 +32,16 @@ public class JpaCourseRepositoryAdapter implements CourseRepositoryPort {
 
     @Override
     public void delete(Course course) {
-        if (!springDataCourseRepository.existsById(course.getId())) {
-            throw new RuntimeException("Course not found");
-        }
+        if (!springDataCourseRepository.existsById(course.getId()))
+            throw new CourseNotFoundException(course.getId());
         springDataCourseRepository.deleteById(course.getId());
     }
-
     @Override
     public Course findById(UUID id) {
         return springDataCourseRepository
                 .findById(id)
                 .map(courseMapper::toDomain)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new CourseNotFoundException(id));
     }
 
     @Override
@@ -48,7 +49,7 @@ public class JpaCourseRepositoryAdapter implements CourseRepositoryPort {
         return springDataCourseRepository
                 .findByName(name)
                 .map(courseMapper::toDomain)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new CourseNotFoundException(name));
     }
 
     @Override
@@ -58,14 +59,14 @@ public class JpaCourseRepositoryAdapter implements CourseRepositoryPort {
         return courseMapper.toDomain(springDataCourseRepository.save(entity));
     }
 
+
     @Override
     public Course update(Course course) {
         CourseEntity entity = springDataCourseRepository
                 .findById(course.getId())
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new CourseNotFoundException(course.getId()));
         courseMapper.updateEntity(course, entity);
-        entity = springDataCourseRepository.save(entity);
-        return courseMapper.toDomain(entity);
+        return courseMapper.toDomain(springDataCourseRepository.save(entity));
     }
 
     @Override
@@ -78,6 +79,27 @@ public class JpaCourseRepositoryAdapter implements CourseRepositoryPort {
                 )
         ).getContent();
         return courses.stream()
+                .map(courseMapper::toDomain)
+                .toList();
+    }
+
+
+    @Override
+    public List<Course> findAll(int page, int size, String sort, CourseStatus status) {
+        Pageable pageable = PageRequest
+                .of(
+                        page,
+                        size,
+                        Sort.by(Sort.Direction.fromString(sort), "name")
+                );
+
+        List<CourseEntity> result = switch (status) {
+            case ACTIVE   -> springDataCourseRepository.findAllByStatus(true, pageable).getContent();
+            case INACTIVE -> springDataCourseRepository.findAllByStatus(false, pageable).getContent();
+            case ALL      -> springDataCourseRepository.findAll(pageable).getContent();
+        };
+
+        return result.stream()
                 .map(courseMapper::toDomain)
                 .toList();
     }

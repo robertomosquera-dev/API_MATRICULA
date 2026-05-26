@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.mt.ev.domain.exceptions.TuitionInvalidStateException;
+import org.mt.ev.domain.exceptions.TuitionValidationException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,36 +25,26 @@ public class Tuition {
 
     public void enable() {
         if (Boolean.TRUE.equals(this.status))
-            throw new IllegalStateException("La matrícula ya está activa");
+            throw TuitionInvalidStateException.alreadyActive();
         this.status = true;
     }
 
     public void disable() {
         if (Boolean.FALSE.equals(this.status))
-            throw new IllegalStateException("La matrícula ya está inactiva");
+            throw TuitionInvalidStateException.alreadyInactive();
         this.status = false;
     }
 
-    //Intetar probar
-    public Student getStudentIsCourse(UUID courseId) {
-        if(details.stream().anyMatch(detail -> detail.getCourse().getId().equals(courseId))){
-            return student;
-        }
-        return null;
-    }
-
-    public static Tuition create(
-            Student student,
-            List<TuitionDetail> details) {
+    public static Tuition create(Student student, List<TuitionDetail> details) {
 
         if (student == null)
-            throw new IllegalArgumentException("El estudiante es obligatorio");
+            throw TuitionValidationException.studentRequired();
 
         if (!student.isAdult())
-            throw new IllegalStateException("El estudiante debe ser mayor de edad para matricularse");
+            throw TuitionInvalidStateException.studentIsMinor();
 
         if (details == null || details.isEmpty())
-            throw new IllegalArgumentException("Debe incluir al menos un curso");
+            throw TuitionValidationException.detailsRequired();
 
         return Tuition.builder()
                 .student(student)

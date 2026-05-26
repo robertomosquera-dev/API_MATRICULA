@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.StudentRequest;
 import org.mt.ev.application.dto.Request.StudentUpdateRequest;
 import org.mt.ev.application.dto.Response.StudentResponse;
+import org.mt.ev.application.exceptions.StudentInvalidStateException;
 import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.FindStudentUseCase;
@@ -32,9 +33,7 @@ public class StudentService implements
         Student student = studentMapper.toDomainFromRequest(studentRequest);
 
         if (!student.isAdult()) {
-            throw new IllegalStateException(
-                    "El estudiante debe ser mayor de edad"
-            );
+            throw StudentInvalidStateException.isMinor();
         }
 
         student = studentRepositoryPort.create(student);

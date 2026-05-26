@@ -9,4 +9,5 @@ public interface TuitionRepositoryPort {
     Tuition create(Tuition tuition);
     Tuition findById(UUID id);
     List<Tuition> findAll();
+    Tuition merge(Tuition tuition);
 }

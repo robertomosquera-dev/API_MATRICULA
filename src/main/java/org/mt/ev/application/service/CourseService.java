@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.CourseRequest;
 import org.mt.ev.application.dto.Request.CourseUpdateRequest;
 import org.mt.ev.application.dto.Response.CourseResponse;
+import org.mt.ev.application.exceptions.CourseInvalidStateException;
 import org.mt.ev.application.port.input.courseUseCase.*;
 import org.mt.ev.application.port.out.CourseRepositoryPort;
 import org.mt.ev.domain.model.Course;
+import org.mt.ev.domain.model.CourseStatus;
 import org.mt.ev.infrastructure.mapper.CourseMapper;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +37,7 @@ public class CourseService implements
         Course course = courseRepositoryPort.findById(courseId);
 
         if (course.isActive()) {
-            throw new IllegalStateException(
-                    "An active course cannot be deleted"
-            );
+            throw CourseInvalidStateException.cannotDeleteActive();
         }
 
         courseRepositoryPort.delete(course);
@@ -59,10 +59,11 @@ public class CourseService implements
     public List<CourseResponse> findAllCourses(
             int page,
             int size,
-            String sort
+            String sort,
+            CourseStatus status
     ) {
         return courseMapper
-                .toResponseList(courseRepositoryPort.findAll(page, size, sort));
+                .toResponseList(courseRepositoryPort.findAll(page, size, sort, status));
     }
 
     @Override

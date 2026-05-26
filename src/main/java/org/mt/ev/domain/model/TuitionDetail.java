@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.mt.ev.domain.exceptions.TuitionDetailValidationException;
 
 import java.util.UUID;
 
@@ -19,10 +20,10 @@ public class TuitionDetail {
 
     public static TuitionDetail create(Course course, String classroom) {
         if (course == null)
-            throw new IllegalArgumentException("El curso es obligatorio");
+            throw TuitionDetailValidationException.courseRequired();
 
         if (!course.isActive())
-            throw new IllegalStateException("No se puede matricular en un curso inactivo");
+            throw TuitionDetailValidationException.courseIsInactive();
 
         return TuitionDetail.builder()
                 .course(course)

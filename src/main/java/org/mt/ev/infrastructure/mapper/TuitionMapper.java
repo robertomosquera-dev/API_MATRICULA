@@ -1,7 +1,6 @@
 package org.mt.ev.infrastructure.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.mt.ev.application.dto.Response.TuitionResponse;
 import org.mt.ev.domain.model.Tuition;
 import org.mt.ev.infrastructure.entity.TuitionEntity;
@@ -32,4 +31,11 @@ public interface TuitionMapper {
     TuitionResponse toResponse(Tuition tuition);
 
     List<Tuition> toDomainList(List<TuitionEntity> entityList);
+
+
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE
+    )
+    void updateEntity(Tuition tuition, @MappingTarget TuitionEntity entity);
 }

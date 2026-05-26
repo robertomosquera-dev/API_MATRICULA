@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.port.out.StudentRepositoryPort;
 import org.mt.ev.domain.model.Student;
 import org.mt.ev.infrastructure.entity.StudentEntity;
+import org.mt.ev.infrastructure.exceptions.StudentNotFoundException;
 import org.mt.ev.infrastructure.mapper.StudentMapper;
 import org.mt.ev.infrastructure.repository.SpringDataStudentRepository;
 import org.springframework.data.domain.PageRequest;
@@ -30,11 +31,8 @@ public class JpaStudentRepositoryAdapter implements StudentRepositoryPort {
 
     @Override
     public void delete(UUID id) {
-
-        if (!springDataStudentRepository.existsById(id)) {
-            throw new RuntimeException("Student not found");
-        }
-
+        if (!springDataStudentRepository.existsById(id))
+            throw new StudentNotFoundException(id);
         springDataStudentRepository.deleteById(id);
     }
 
@@ -43,29 +41,24 @@ public class JpaStudentRepositoryAdapter implements StudentRepositoryPort {
         return springDataStudentRepository
                 .findById(id)
                 .map(studentMapper::toDomain)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new StudentNotFoundException(id));
     }
 
     @Override
     public Student findByDni(String dni) {
         return springDataStudentRepository
-                .findByDni((dni))
+                .findByDni(dni)
                 .map(studentMapper::toDomain)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new StudentNotFoundException(dni));
     }
 
     @Override
     public Student update(Student student) {
-
         StudentEntity entity = springDataStudentRepository
                 .findById(student.getId())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-
+                .orElseThrow(() -> new StudentNotFoundException(student.getId()));
         studentMapper.updateEntity(student, entity);
-
-        entity = springDataStudentRepository.save(entity);
-
-        return studentMapper.toDomain(entity);
+        return studentMapper.toDomain(springDataStudentRepository.save(entity));
     }
 
     @Override

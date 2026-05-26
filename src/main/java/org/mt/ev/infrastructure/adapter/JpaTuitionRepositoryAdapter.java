@@ -6,6 +6,7 @@ import org.mt.ev.domain.model.Tuition;
 import org.mt.ev.domain.model.TuitionDetail;
 import org.mt.ev.infrastructure.entity.TuitionDetailEntity;
 import org.mt.ev.infrastructure.entity.TuitionEntity;
+import org.mt.ev.infrastructure.exceptions.TuitionNotFoundException;
 import org.mt.ev.infrastructure.mapper.TuitionMapper;
 import org.mt.ev.infrastructure.repository.SpringDataTuitionRepository;
 import org.springframework.stereotype.Repository;
@@ -40,17 +41,21 @@ public class JpaTuitionRepositoryAdapter implements TuitionRepositoryPort {
 
     @Override
     public Tuition findById(UUID id) {
-
-        TuitionEntity entity = springDataTuitionRepository
+        return springDataTuitionRepository
                 .findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Tuition not found"));
-
-        return tuitionMapper.toDomain(entity);
+                .map(tuitionMapper::toDomain)
+                .orElseThrow(() -> new TuitionNotFoundException(id));
     }
 
     @Override
     public List<Tuition> findAll() {
         return tuitionMapper.toDomainList(springDataTuitionRepository.findAll());
+    }
+
+    @Override
+    public Tuition merge(Tuition tuition) {
+        TuitionEntity entity = springDataTuitionRepository.getReferenceById(tuition.getId());
+        tuitionMapper.updateEntity(tuition, entity);
+        return tuitionMapper.toDomain(springDataTuitionRepository.save(entity));
     }
 }

@@ -8,12 +8,13 @@ import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.FindStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.UpdateStudentUseCase;
+import org.mt.ev.infrastructure.Utils.ApiResponse;
+import org.mt.ev.infrastructure.Utils.ApiResponseImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/students")
 @RequiredArgsConstructor
@@ -25,36 +26,38 @@ public class StudentController {
     private final DeleteStudentUseCase deleteStudentUseCase;
 
     @PostMapping
-    public ResponseEntity<StudentResponse> create(@Valid @RequestBody StudentRequest request) {
-        return ResponseEntity.ok(createStudentUseCase.createStudent(request));
+    public ResponseEntity<ApiResponse<StudentResponse>> create(@Valid @RequestBody StudentRequest request) {
+        return ResponseEntity.status(201)
+                .body(ApiResponseImpl.created(createStudentUseCase.createStudent(request)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StudentResponse> findById(@PathVariable UUID id) {
-        return ResponseEntity.ok(findStudentUseCase.findStudentById(id));
+    public ResponseEntity<ApiResponse<StudentResponse>> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponseImpl.success(findStudentUseCase.findStudentById(id)));
     }
 
     @GetMapping("/dni/{dni}")
-    public ResponseEntity<StudentResponse> findByDni(@PathVariable String dni) {
-        return ResponseEntity.ok(findStudentUseCase.findStudentByDni(dni));
+    public ResponseEntity<ApiResponse<StudentResponse>> findByDni(@PathVariable String dni) {
+        return ResponseEntity.ok(ApiResponseImpl.success(findStudentUseCase.findStudentByDni(dni)));
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentResponse>> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "asc") String sort) {
-        return ResponseEntity.ok(findStudentUseCase.findAllStudent(page, size, sort));
+    public ResponseEntity<ApiResponse<List<StudentResponse>>> findAll(
+            @RequestParam(defaultValue = "0")   int page,
+            @RequestParam(defaultValue = "10")  int size,
+            @RequestParam(defaultValue = "asc") String sort
+    ) {
+        return ResponseEntity.ok(ApiResponseImpl.success(findStudentUseCase.findAllStudent(page, size, sort)));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<StudentResponse> update(@Valid @RequestBody StudentUpdateRequest request, @PathVariable UUID id) {
-        return ResponseEntity.ok(updateStudentUseCase.updateStudent(request,id));
+    public ResponseEntity<ApiResponse<StudentResponse>> update(@Valid @RequestBody StudentUpdateRequest request, @PathVariable UUID id) {
+        return ResponseEntity.ok(ApiResponseImpl.success(updateStudentUseCase.updateStudent(request, id)));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         deleteStudentUseCase.deleteStudent(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseImpl.success(null, "Estudiante eliminado correctamente"));
     }
 }
