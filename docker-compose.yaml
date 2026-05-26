@@ -18,7 +18,16 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-
+  redis-cache:
+      image: redis:8-alpine
+      container_name: tuition-redis
+      ports:
+        - "6370:6379"
+      command: redis-server --requirepass ${REDIS_PASS}
+      volumes:
+        - redis-data:/data
+      networks:
+        - tuition-net
   tuition-app:
     build: .
     container_name: tuition-app
@@ -26,6 +35,9 @@ services:
       - BD_URL=${BD_URL}
       - BD_USER=${BD_USER}
       - BD_PASS=${BD_PASS}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASS=${REDIS_PASS}
     ports:
       - "8090:8080"
     networks:
@@ -34,9 +46,8 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
-
 volumes:
   db-data:
-
+  redis-data:
 networks:
   tuition-net:
