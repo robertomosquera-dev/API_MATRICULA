@@ -85,12 +85,6 @@ public class GlobalExceptionHandler {
                 .body(ApiResponseImpl.error(404, ex.getMessage()));
     }
 
-    @ExceptionHandler(CourseInvalidStateException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCourseInvalidStateTwo(CourseInvalidStateException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponseImpl.error(400, ex.getMessage()));
-    }
-
     @ExceptionHandler(StudentInvalidStateException.class)
     public ResponseEntity<ApiResponse<Void>> handleStudentInvalidState(StudentInvalidStateException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)

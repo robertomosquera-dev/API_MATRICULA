@@ -13,4 +13,8 @@ public class CourseInvalidStateException extends DomainException {
     public static CourseInvalidStateException alreadyInactive() {
         return new CourseInvalidStateException("El curso ya está inactivo");
     }
+
+    public static CourseInvalidStateException cannotDeleteActive() {
+        return new CourseInvalidStateException("Un curso activo no puede ser eliminado");
+    }
 }

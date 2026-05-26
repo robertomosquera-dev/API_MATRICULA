@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tuition-db
+    environment:
+      - POSTGRES_USER=${BD_USER}
+      - POSTGRES_PASSWORD=${BD_PASS}
+      - POSTGRES_DB=${BD_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - tuition-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${BD_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  tuition-app:
+    build: .
+    container_name: tuition-app
+    environment:
+      - BD_URL=${BD_URL}
+      - BD_USER=${BD_USER}
+      - BD_PASS=${BD_PASS}
+    ports:
+      - "8090:8080"
+    networks:
+      - tuition-net
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:
+
+networks:
+  tuition-net:

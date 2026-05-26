@@ -1,0 +1,4 @@
+datasource:
+  url: ${BD_URL}
+  username: ${BD_USER}
+  password: ${BD_PASS}
