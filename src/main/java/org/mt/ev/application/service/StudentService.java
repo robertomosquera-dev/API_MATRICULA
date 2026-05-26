@@ -12,6 +12,9 @@ import org.mt.ev.application.port.input.studentUseCase.UpdateStudentUseCase;
 import org.mt.ev.application.port.out.StudentRepositoryPort;
 import org.mt.ev.domain.model.Student;
 import org.mt.ev.infrastructure.mapper.StudentMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +30,10 @@ public class StudentService implements
     private final StudentRepositoryPort studentRepositoryPort;
     private final StudentMapper studentMapper;
 
+    @CacheEvict(
+            value = "student",
+            allEntries = true
+    )
     @Override
     public StudentResponse createStudent(StudentRequest studentRequest) {
 
@@ -41,11 +48,19 @@ public class StudentService implements
         return studentMapper.toResponse(student);
     }
 
+    @CacheEvict(
+            value = "student",
+            allEntries = true
+    )
     @Override
     public void deleteStudent(UUID studentId) {
         studentRepositoryPort.delete(studentId);
     }
 
+    @Cacheable(
+            value = "student",
+            key = "#studentId"
+    )
     @Override
     public StudentResponse findStudentById(UUID studentId) {
         return studentMapper.toResponse(
@@ -53,6 +68,10 @@ public class StudentService implements
         );
     }
 
+    @Cacheable(
+            value = "student",
+            key = "#dni"
+    )
     @Override
     public StudentResponse findStudentByDni(String dni) {
         return studentMapper.toResponse(
@@ -60,6 +79,11 @@ public class StudentService implements
         );
     }
 
+
+    @Cacheable(
+            value = "student",
+            key = "{#page,#size,#sort}"
+    )
     @Override
     public List<StudentResponse> findAllStudent(
             int page,
@@ -71,6 +95,10 @@ public class StudentService implements
         );
     }
 
+    @CachePut(
+            value = "student",
+            key = "#studentId"
+    )
     @Override
     public StudentResponse updateStudent(
             StudentUpdateRequest studentUpdateRequest,

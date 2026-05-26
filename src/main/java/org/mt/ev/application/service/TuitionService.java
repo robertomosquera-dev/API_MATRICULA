@@ -15,6 +15,9 @@ import org.mt.ev.domain.model.Student;
 import org.mt.ev.domain.model.Tuition;
 import org.mt.ev.domain.model.TuitionDetail;
 import org.mt.ev.infrastructure.mapper.TuitionMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +50,7 @@ public class TuitionService
                 );
     }
 
+    @CacheEvict(value = {"tuition","tuition-map"}, allEntries = true)
     @Transactional
     @Override
     public TuitionResponse createTuition(TuitionRequest tuitionRequest) {
@@ -65,14 +69,21 @@ public class TuitionService
         return tuitionMapper.toResponse(tuition);
     }
 
+    @Cacheable(
+            value = "tuition",
+            key = "#tuitionId"
+    )
     @Override
-    public TuitionResponse findTuitionById(UUID id) {
+    public TuitionResponse findTuitionById(UUID tuitionId) {
 
-        Tuition tuition = tuitionRepositoryPort.findById(id);
+        Tuition tuition = tuitionRepositoryPort.findById(tuitionId);
 
         return tuitionMapper.toResponse(tuition);
     }
 
+    @Cacheable(
+            value = "tuition-map"
+    )
     @Override
     public Map<String, Set<String>> findTuitionMap() {
 
@@ -95,6 +106,10 @@ public class TuitionService
                 ));
     }
 
+    @CachePut(
+            value = "tuition",
+            key = "#tuitionId"
+    )
     @Override
     public TuitionResponse enable(UUID tuitionId) {
         Tuition tuition = tuitionRepositoryPort.findById(tuitionId);
@@ -103,6 +118,10 @@ public class TuitionService
         return tuitionMapper.toResponse(tuition);
     }
 
+    @CachePut(
+            value = "tuition",
+            key = "#tuitionId"
+    )
     @Override
     public TuitionResponse disable(UUID tuitionId) {
         Tuition tuition = tuitionRepositoryPort.findById(tuitionId);

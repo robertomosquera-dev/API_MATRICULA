@@ -1,5 +1,6 @@
 package org.mt.ev.application.dto.Response;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 public record StudentResponse(
@@ -8,5 +9,5 @@ public record StudentResponse(
     String surnames,
     String dni,
     Integer age
-) {
+) implements Serializable {
 }

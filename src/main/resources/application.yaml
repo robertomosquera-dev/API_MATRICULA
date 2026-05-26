@@ -1,6 +1,15 @@
 spring:
   application:
     name: APP_MATRICULA
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASS}
   datasource:
     url: ${BD_URL}
     username: ${BD_USER}

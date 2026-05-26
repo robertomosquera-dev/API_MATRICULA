@@ -1,6 +1,7 @@
 package org.mt.ev.application.dto.Response;
 
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,5 +13,5 @@ public record TuitionResponse(
         LocalDateTime tuitionDate,
         String studentName,
         List<TuitionDetailResponse> tuitionDetails
-) {
+) implements Serializable {
 }
