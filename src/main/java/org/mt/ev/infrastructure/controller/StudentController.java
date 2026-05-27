@@ -8,8 +8,8 @@ import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.FindStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.UpdateStudentUseCase;
-import org.mt.ev.infrastructure.Utils.ApiResponse;
-import org.mt.ev.infrastructure.Utils.ApiResponseImpl;
+import org.mt.ev.infrastructure.utils.ApiResponse;
+import org.mt.ev.infrastructure.utils.ApiResponseImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

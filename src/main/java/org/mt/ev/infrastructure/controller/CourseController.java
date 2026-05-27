@@ -7,8 +7,8 @@ import org.mt.ev.application.dto.Request.CourseUpdateRequest;
 import org.mt.ev.application.dto.Response.CourseResponse;
 import org.mt.ev.application.port.input.courseUseCase.*;
 import org.mt.ev.domain.model.CourseStatus;
-import org.mt.ev.infrastructure.Utils.ApiResponse;
-import org.mt.ev.infrastructure.Utils.ApiResponseImpl;
+import org.mt.ev.infrastructure.utils.ApiResponse;
+import org.mt.ev.infrastructure.utils.ApiResponseImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

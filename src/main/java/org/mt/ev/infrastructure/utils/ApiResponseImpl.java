@@ -1,4 +1,4 @@
-package org.mt.ev.infrastructure.Utils;
+package org.mt.ev.infrastructure.utils;
 
 
 public record ApiResponseImpl<T>(

@@ -1,24 +1,30 @@
 package org.mt.ev.application.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.mt.ev.application.dto.Request.StudentRequest;
 import org.mt.ev.application.dto.Request.StudentUpdateRequest;
+import org.mt.ev.application.dto.Request.UserRequest;
 import org.mt.ev.application.dto.Response.StudentResponse;
 import org.mt.ev.application.exceptions.StudentInvalidStateException;
 import org.mt.ev.application.port.input.studentUseCase.CreateStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.DeleteStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.FindStudentUseCase;
 import org.mt.ev.application.port.input.studentUseCase.UpdateStudentUseCase;
+import org.mt.ev.application.port.out.KeycloakRepositoryPort;
 import org.mt.ev.application.port.out.StudentRepositoryPort;
 import org.mt.ev.domain.model.Student;
 import org.mt.ev.infrastructure.mapper.StudentMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudentService implements
@@ -28,7 +34,11 @@ public class StudentService implements
         UpdateStudentUseCase {
 
     private final StudentRepositoryPort studentRepositoryPort;
+    private final KeycloakRepositoryPort keycloakRepositoryPort;
     private final StudentMapper studentMapper;
+
+    @Value("${jwt.role-user}")
+    private String ROLE_STUDENT;
 
     @CacheEvict(
             value = "student",
@@ -42,6 +52,19 @@ public class StudentService implements
         if (!student.isAdult()) {
             throw StudentInvalidStateException.isMinor();
         }
+
+        UserRequest userRequest = UserRequest.builder()
+                .username(studentRequest.dni())
+                .email(studentRequest.email())
+                .firstname(studentRequest.names())
+                .lastname(studentRequest.surnames())
+                .password(studentRequest.password())
+                .roles(Set.of(ROLE_STUDENT))
+                .build();
+
+        String res = keycloakRepositoryPort.createUser(userRequest);
+
+        log.info("user creation response: {}", res);
 
         student = studentRepositoryPort.create(student);
 

@@ -7,8 +7,8 @@ import org.mt.ev.application.dto.Response.TuitionResponse;
 import org.mt.ev.application.port.input.tuitionUseCase.ChangeStatusTuitionUseCase;
 import org.mt.ev.application.port.input.tuitionUseCase.CreateTuitionUseCase;
 import org.mt.ev.application.port.input.tuitionUseCase.FindTuitionUseCase;
-import org.mt.ev.infrastructure.Utils.ApiResponse;
-import org.mt.ev.infrastructure.Utils.ApiResponseImpl;
+import org.mt.ev.infrastructure.utils.ApiResponse;
+import org.mt.ev.infrastructure.utils.ApiResponseImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

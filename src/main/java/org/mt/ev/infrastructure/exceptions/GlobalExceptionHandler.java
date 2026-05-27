@@ -2,8 +2,8 @@ package org.mt.ev.infrastructure.exceptions;
 
 import org.mt.ev.application.exceptions.StudentInvalidStateException;
 import org.mt.ev.domain.exceptions.*;
-import org.mt.ev.infrastructure.Utils.ApiResponse;
-import org.mt.ev.infrastructure.Utils.ApiResponseImpl;
+import org.mt.ev.infrastructure.utils.ApiResponse;
+import org.mt.ev.infrastructure.utils.ApiResponseImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

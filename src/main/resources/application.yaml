@@ -27,4 +27,27 @@ spring:
   threads:
     virtual:
       enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/spring-boot-realm-dev
+          jwk-set-uri: http://localhost:9090/realms/spring-boot-realm-dev/protocol/openid-connect/certs
+logging:
+  level:
+    org:
+      keycloak: DEBUG
+      springframework:
+        security: TRACE
+
+jwt:
+  auth:
+    converter:
+      principle-attribute: preferred_username
+      resource-id: ${RESOURCE_ID}
+  role-user: ${ROLE_USER}
+
+
+
+
 
