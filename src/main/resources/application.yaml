@@ -31,8 +31,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9090/realms/spring-boot-realm-dev
-          jwk-set-uri: http://localhost:9090/realms/spring-boot-realm-dev/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_URL}/realms/${REALM_NAME}
+          jwk-set-uri: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/certs
 logging:
   level:
     org:
@@ -46,6 +46,13 @@ jwt:
       principle-attribute: preferred_username
       resource-id: ${RESOURCE_ID}
   role-user: ${ROLE_USER}
+  keycloak-url: ${KEYCLOAK_URL}
+  realm-name: ${REALM_NAME}
+  client-id: ${RESOURCE_ID}
+  client-secret: ${CLIENT_SECRET}
+  console-user: ${CONSOLE_USER}
+  console-password: ${CONSOLE_PASSWORD}
+  realm-master: ${REALM_MASTER}
 
 
 

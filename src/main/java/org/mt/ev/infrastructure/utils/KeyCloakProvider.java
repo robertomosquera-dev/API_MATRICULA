@@ -5,41 +5,77 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KeyCloakProvider {
 
+    private static String keycloakUrl;
+    private static String realmName;
+    private static String realmMaster;
+    private static String clientId;
+    private static String clientSecret;
+    private static String consoleUser;
+    private static String consolePassword;
 
-    private static final String KEYCLOAK_URL = "http://localhost:9090/auth";
-    private static final String REALM_NAME = "spring-boot-realm-dev";
-    private static final String REALM_MASTER = "master";
-    private static final String ADMIN_CLI = "admin-cli";
-    private static final String USER_CONSOLE = "admin";
-    private static final String USER_PASSWORD = "123";
-    private static final String CLIENT_SECRET = "xUpik2N3ezAzRy05HSn4YtPKLNJ1tZWT";
+    @Value("${jwt.keycloak-url}")
+    public void setKeycloakUrl(String keycloakUrl) {
+        KeyCloakProvider.keycloakUrl = keycloakUrl;
+    }
 
-    public static RealmResource getRealmResource(){
+    @Value("${jwt.realm-name}")
+    public void setRealmName(String realmName) {
+        KeyCloakProvider.realmName = realmName;
+    }
+
+    @Value("${jwt.realm-master}")
+    public void setRealmMaster(String realmMaster) {
+        KeyCloakProvider.realmMaster = realmMaster;
+    }
+
+    @Value("${jwt.client-id}")
+    public void setClientId(String clientId) {
+        KeyCloakProvider.clientId = clientId;
+    }
+
+    @Value("${jwt.client-secret}")
+    public void setClientSecret(String clientSecret) {
+        KeyCloakProvider.clientSecret = clientSecret;
+    }
+
+    @Value("${jwt.console-user}")
+    public void setConsoleUser(String consoleUser) {
+        KeyCloakProvider.consoleUser = consoleUser;
+    }
+
+    @Value("${jwt.console-password}")
+    public void setConsolePassword(String consolePassword) {
+        KeyCloakProvider.consolePassword = consolePassword;
+    }
+
+    public static RealmResource getRealmResource() {
         Keycloak keycloak = KeycloakBuilder
                 .builder()
-                .serverUrl(KEYCLOAK_URL)
-                .realm(REALM_MASTER)
-                .clientId(ADMIN_CLI)
-                .username(USER_CONSOLE)
-                .password(USER_PASSWORD)
-                .clientSecret(CLIENT_SECRET)
+                .serverUrl(keycloakUrl)
+                .realm(realmMaster)
+                .clientId("admin-cli")
+                .username(consoleUser)
+                .password(consolePassword)
+                .clientSecret(clientSecret)
                 .resteasyClient(new ResteasyClientBuilderImpl()
                         .connectionPoolSize(10)
                         .build()
                 )
                 .build();
-        return keycloak.realm(REALM_NAME);
+        return keycloak.realm(realmName);
     }
 
-
-    public static UsersResource getUserResource(){
-        RealmResource realmResource = getRealmResource();
-        return realmResource.users();
+    public static UsersResource getUserResource() {
+        return getRealmResource().users();
     }
 
+    public static String getClientId() {
+        return clientId;
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleStudentInvalidState(StudentInvalidStateException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponseImpl.error(400, ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponseImpl<Void>> handleAccessDenied(
+            AccessDeniedException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponseImpl.error(403,"No tienes permisos para acceder a este recurso"));
     }
 
 }

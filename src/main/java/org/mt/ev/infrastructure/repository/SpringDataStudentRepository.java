@@ -9,4 +9,6 @@ import java.util.UUID;
 
 public interface SpringDataStudentRepository extends JpaRepository<StudentEntity, UUID> {
     Optional<StudentEntity> findByDni(String dni);
+
+    Boolean existsByDni(String dni);
 }

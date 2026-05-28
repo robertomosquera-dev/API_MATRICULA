@@ -53,6 +53,12 @@ public class StudentService implements
             throw StudentInvalidStateException.isMinor();
         }
 
+        if(studentRepositoryPort.existsByDni(studentRequest.dni())){
+            throw StudentInvalidStateException.dniAlreadyExists();
+        }
+
+        student = studentRepositoryPort.create(student);
+
         UserRequest userRequest = UserRequest.builder()
                 .username(studentRequest.dni())
                 .email(studentRequest.email())
@@ -65,8 +71,6 @@ public class StudentService implements
         String res = keycloakRepositoryPort.createUser(userRequest);
 
         log.info("user creation response: {}", res);
-
-        student = studentRepositoryPort.create(student);
 
         return studentMapper.toResponse(student);
     }

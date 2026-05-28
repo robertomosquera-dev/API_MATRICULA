@@ -7,3 +7,22 @@ data:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
       password: ${REDIS_PASS}
+security:
+  oauth2:
+    resourceserver:
+      jwt:
+        issuer-uri: ${KEYCLOAK_URL}/realms/${REALM_NAME}
+        jwk-set-uri: ${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/certs
+jwt:
+  auth:
+    converter:
+      principle-attribute: preferred_username
+      resource-id: ${RESOURCE_ID}
+  role-user: ${ROLE_USER}
+  keycloak-url: ${KEYCLOAK_URL}
+  realm-name: ${REALM_NAME}
+  client-id: ${RESOURCE_ID}
+  client-secret: ${CLIENT_SECRET}
+  console-user: ${CONSOLE_USER}
+  console-password: ${CONSOLE_PASSWORD}
+  realm-master: ${REALM_MASTER}

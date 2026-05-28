@@ -53,6 +53,11 @@ public class JpaStudentRepositoryAdapter implements StudentRepositoryPort {
     }
 
     @Override
+    public Boolean existsByDni(String dni) {
+        return springDataStudentRepository.existsByDni(dni);
+    }
+
+    @Override
     public Student update(Student student) {
         StudentEntity entity = springDataStudentRepository
                 .findById(student.getId())

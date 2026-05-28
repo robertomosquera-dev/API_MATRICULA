@@ -8,20 +8,30 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.mt.ev.application.dto.Request.LoginRequest;
 import org.mt.ev.application.dto.Response.LoginResponse;
 import org.mt.ev.application.port.out.AuthRepositoryPort;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class KeycloakAuthAdapter implements AuthRepositoryPort {
 
+    @Value("${jwt.keycloak-url}")
+    private String KEYCLOAK_URL;
+    @Value("${jwt.realm-name}")
+    private String REALM_NAME;
+    @Value("${jwt.client-id}")
+    private String CLIENT_ID;
+    @Value("${jwt.client-secret}")
+    private String CLIENT_SECRET;
+
     @Override
     public LoginResponse login(LoginRequest request) {
 
         Keycloak keycloak = KeycloakBuilder.builder()
-                .serverUrl("http://localhost:9090/auth")
-                .realm("spring-boot-realm-dev")
-                .clientId("tu-client-id")
-                .clientSecret("tu-client-secret")
+                .serverUrl(KEYCLOAK_URL)
+                .realm(REALM_NAME)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
                 .grantType(OAuth2Constants.PASSWORD)
                 .username(request.username())
                 .password(request.password())
@@ -36,5 +46,4 @@ public class KeycloakAuthAdapter implements AuthRepositoryPort {
                 token.getExpiresIn()
         );
     }
-
 }

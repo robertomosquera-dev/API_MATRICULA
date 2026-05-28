@@ -10,6 +10,7 @@ public interface StudentRepositoryPort {
     void delete(UUID id);
     Student findById(UUID id);
     Student findByDni(String dni);
+    Boolean existsByDni(String dni);
     Student update(Student student);
     List<Student> findAll(int page, int size, String sort);
 }

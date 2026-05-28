@@ -54,7 +54,8 @@ public class KeycloakAdapter implements KeycloakRepositoryPort {
 
     /**
      * Creates a new user in the Keycloak system based on the provided user request details.
-     * The method configures the user's basic details, assigns roles, and sets the user's password.
+     * The method configures the user's basic details, assigns realm roles, client roles,
+     * and sets the user's password dynamically without hardcoded role mappings.
      *
      * @param userRequest an instance of {@code UserRequest} containing the details of the user
      *                    to be created, such as username, email, firstname, lastname, password,
@@ -68,17 +69,13 @@ public class KeycloakAdapter implements KeycloakRepositoryPort {
     @Override
     public String createUser(@NonNull UserRequest userRequest) {
 
-        int status = 0;
-
         UsersResource usersResource = KeyCloakProvider.getUserResource();
-
         UserRepresentation userRepresentation = createRepresentation(userRequest);
-
-        Response response= usersResource.create(userRepresentation);
-
-        status = response.getStatus();
+        Response response = usersResource.create(userRepresentation);
+        int status = response.getStatus();
 
         if (status == 201) {
+
             String path = response.getLocation().getPath();
             String userId = path.substring(path.lastIndexOf("/") + 1);
 
@@ -86,46 +83,60 @@ public class KeycloakAdapter implements KeycloakRepositoryPort {
             credentialRepresentation.setTemporary(false);
             credentialRepresentation.setType(OAuth2Constants.PASSWORD);
             credentialRepresentation.setValue(userRequest.password());
-
-            usersResource
-                    .get(userId)
-                    .resetPassword(credentialRepresentation);
+            usersResource.get(userId).resetPassword(credentialRepresentation);
 
             RealmResource realmResource = KeyCloakProvider.getRealmResource();
+            UserResource userResource = realmResource.users().get(userId);
 
-            List<RoleRepresentation> roleRepresentations = null;
-
-            if(userRequest.roles() == null || userRequest.roles().isEmpty() ){
-                roleRepresentations = List.of(realmResource.roles().get("user").toRepresentation());
-            }else{
-                roleRepresentations = realmResource.roles()
+            List<RoleRepresentation> realmRoles;
+            if (userRequest.roles() == null || userRequest.roles().isEmpty()) {
+                realmRoles = List.of(realmResource.roles().get("user").toRepresentation());
+            } else {
+                realmRoles = realmResource.roles()
                         .list()
                         .stream()
-                        .filter(role -> userRequest
-                                .roles()
-                                .stream()
-                                .anyMatch(roleName -> roleName.equalsIgnoreCase(role.getName()))
-                        )
+                        .filter(role -> userRequest.roles().stream()
+                                .anyMatch(roleName -> roleName.equalsIgnoreCase(role.getName())))
                         .toList();
             }
+            userResource.roles().realmLevel().add(realmRoles);
 
-            realmResource
-                    .users()
-                    .get(userId)
+            String clientUUID = realmResource.clients()
+                    .findByClientId(KeyCloakProvider.getClientId())
+                    .get(0)
+                    .getId();
+
+            List<RoleRepresentation> allClientRoles = realmResource
+                    .clients()
+                    .get(clientUUID)
                     .roles()
-                    .realmLevel()
-                    .add(roleRepresentations);
+                    .list();
+
+            List<RoleRepresentation> clientRoles;
+            if (userRequest.roles() == null || userRequest.roles().isEmpty()) {
+                clientRoles = allClientRoles.stream()
+                        .filter(role -> role.getName().toLowerCase().contains("user"))
+                        .toList();
+            } else {
+                clientRoles = allClientRoles.stream()
+                        .filter(role -> userRequest.roles().stream()
+                                .anyMatch(roleName -> role.getName()
+                                        .toLowerCase()
+                                        .contains(roleName.toLowerCase())))
+                        .toList();
+            }
+            userResource.roles().clientLevel(clientUUID).add(clientRoles);
 
             return "User created successfully";
-        } else if(status == 409) {
+
+        } else if (status == 409) {
             log.error("User already exists");
             return "User already exists";
         } else {
-            log.error("Error creating user");
+            log.error("Error creating user, status: {}", status);
             return "Error creating user";
         }
     }
-
     /**
      * Deletes a user from the Keycloak server based on the provided user ID.
      *
