@@ -58,4 +58,28 @@ public class JpaTuitionRepositoryAdapter implements TuitionRepositoryPort {
         tuitionMapper.updateEntity(tuition, entity);
         return tuitionMapper.toDomain(springDataTuitionRepository.save(entity));
     }
+
+    @Override
+    public void deleteTuition(Tuition tuition) {
+        if(!springDataTuitionRepository.existsById(tuition.getId()))
+            throw new TuitionNotFoundException(tuition.getId());
+        springDataTuitionRepository.deleteById(tuition.getId());
+    }
+
+    @Override
+    public Tuition update(Tuition tuition) {
+
+        TuitionEntity entity = springDataTuitionRepository
+                .findById(tuition.getId())
+                .orElseThrow(() -> new TuitionNotFoundException(tuition.getId()));
+
+        tuitionMapper.updateEntity(tuition, entity);
+
+        if (entity.getTuitionDetails() != null) {
+            entity.getTuitionDetails()
+                    .forEach(detail -> detail.setTuition(entity));
+        }
+
+        return tuitionMapper.toDomain(springDataTuitionRepository.save(entity));
+    }
 }

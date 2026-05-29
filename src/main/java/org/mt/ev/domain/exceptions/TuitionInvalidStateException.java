@@ -17,4 +17,8 @@ public class TuitionInvalidStateException extends DomainException {
     public static TuitionInvalidStateException studentIsMinor() {
         return new TuitionInvalidStateException("El estudiante debe ser mayor de edad para matricularse");
     }
+
+    public static TuitionInvalidStateException cannotDeleteActive() {
+        return new TuitionInvalidStateException("Una matricula activa no puede ser eliminada");
+    }
 }

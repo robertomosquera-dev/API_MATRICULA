@@ -35,6 +35,21 @@ public class Tuition {
         this.status = false;
     }
 
+    public boolean isActive() {
+        return Boolean.TRUE.equals(this.status);
+    }
+
+    public void update(Student student, List<TuitionDetail> details) {
+        if (student == null)
+            throw TuitionValidationException.studentRequired();
+        if (!student.isAdult())
+            throw TuitionInvalidStateException.studentIsMinor();
+        if (details == null || details.isEmpty())
+            throw TuitionValidationException.detailsRequired();
+        this.student = student;
+        this.details = details;
+    }
+
     public static Tuition create(Student student, List<TuitionDetail> details) {
 
         if (student == null)

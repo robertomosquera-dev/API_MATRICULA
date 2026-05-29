@@ -4,16 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.mt.ev.application.dto.Request.TuitionDetailRequest;
 import org.mt.ev.application.dto.Request.TuitionRequest;
 import org.mt.ev.application.dto.Response.TuitionResponse;
-import org.mt.ev.application.port.input.tuitionUseCase.ChangeStatusTuitionUseCase;
-import org.mt.ev.application.port.input.tuitionUseCase.CreateTuitionUseCase;
-import org.mt.ev.application.port.input.tuitionUseCase.FindTuitionUseCase;
+import org.mt.ev.application.port.input.tuitionUseCase.*;
 import org.mt.ev.application.port.out.CourseRepositoryPort;
 import org.mt.ev.application.port.out.StudentRepositoryPort;
 import org.mt.ev.application.port.out.TuitionRepositoryPort;
+import org.mt.ev.domain.exceptions.TuitionInvalidStateException;
 import org.mt.ev.domain.model.Course;
 import org.mt.ev.domain.model.Student;
 import org.mt.ev.domain.model.Tuition;
 import org.mt.ev.domain.model.TuitionDetail;
+import org.mt.ev.infrastructure.exceptions.TuitionNotFoundException;
 import org.mt.ev.infrastructure.mapper.TuitionMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TuitionService
         implements CreateTuitionUseCase, FindTuitionUseCase,
-        ChangeStatusTuitionUseCase {
+        ChangeStatusTuitionUseCase, DeleteTuitionUseCase, UpdateTuitionUseCase {
 
     private final TuitionRepositoryPort tuitionRepositoryPort;
     private final CourseRepositoryPort courseRepositoryPort;
@@ -130,4 +130,38 @@ public class TuitionService
         return tuitionMapper.toResponse(tuition);
     }
 
+    @CacheEvict(
+            value = {"tuition","tuition-map"},
+            allEntries = true
+    )
+    @Override
+    public void deleteTuition(UUID tuitionId) {
+        Tuition tuition = tuitionRepositoryPort.findById(tuitionId);
+        if(!tuition.isActive()){
+            throw TuitionInvalidStateException.cannotDeleteActive();
+        }
+        tuitionRepositoryPort.deleteTuition(tuition);
+    }
+
+    @CachePut(value = "tuition", key = "#id")
+    @CacheEvict(value = "tuition-map", allEntries = true)
+    @Transactional
+    @Override
+    public TuitionResponse updateTuition(UUID id, TuitionRequest request) {
+
+        Tuition tuition = tuitionRepositoryPort.findById(id);
+
+        Student student = studentRepositoryPort.findById(request.studentId());
+
+        List<TuitionDetail> details = request.tuitionDetails()
+                .stream()
+                .map(this::createDetail)
+                .toList();
+
+        tuition.update(student, details);
+
+        tuition = tuitionRepositoryPort.update(tuition);
+
+        return tuitionMapper.toResponse(tuition);
+    }
 }
